@@ -49,6 +49,7 @@ import java.util.List;
 
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
 import static org.opencv.imgproc.Imgproc.rectangle;
+import static org.opencv.imgproc.Imgproc.threshold;
 
 public class OCR extends AppCompatActivity implements NumberPicker.OnValueChangeListener, View.OnTouchListener {
     private static final String TAG = "OCR";
@@ -88,11 +89,12 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
     Rect subRect = null;
 
-
     // Iteratore risultato tesseract
     ResultIterator textIterator = null;
 
 
+    // Lista dei valori ricercare
+    ArrayList<String> labelValues;
 
     // Tesseract
     TessOCR mTessOCR;
@@ -118,8 +120,9 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ocr);
 
+        // Associa un activity alla sua View
+        setContentView(R.layout.activity_ocr);
 
         // Carico il number picker nel layout
         np = (NumberPicker) findViewById(R.id.nBin);
@@ -138,6 +141,22 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
         // Istanzio oggetto Tesseract
         mTessOCR = new TessOCR(this,language);
+
+        // Se il bundle è presente setto la lista per OCR
+        Bundle bundle = getIntent().getExtras();
+
+        if(bundle != null){
+
+            labelValues = bundle.getStringArrayList(LabelActivity.STRINGA_BUNDLE);
+
+            System.out.println("Ottenuto i dati da controllare");
+            for (int i = 0; i < labelValues.size(); i++){
+                System.out.println(labelValues.get(i).toString());
+
+            }
+
+        }
+
     }
 
     @Override
@@ -482,9 +501,18 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             // Stampo immagine originale con inserito i bounding box trovati
             displayImage(boundingImage);
 
+        }
 
+        // Avvio activity per inserimento caratteri etichetta
 
+        else if (id == R.id.action_label){
 
+            System.out.println("Avvio Activity inserimento campi etichetta");
+
+            // Creo intent per il cambio activity
+            Context context = getApplicationContext();
+            Intent intent = new Intent(new Intent(context, LabelActivity.class));
+            startActivity(intent);
 
         }
 

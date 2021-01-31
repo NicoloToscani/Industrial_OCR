@@ -60,8 +60,12 @@
             <item android:id="@+id/action_ocr_apply"
                 android:orderInCategory="510"
                 android:title="@string/ocr_run"/>
+            <item android:id="@+id/action_label"
+                android:orderInCategory="510"
+                android:title="@string/label_settings"/>
 
         </menu>
+
 
     </item>
 
@@ -93,6 +97,8 @@
 
         </menu>
     </item>
+
+
 
 
 </menu>

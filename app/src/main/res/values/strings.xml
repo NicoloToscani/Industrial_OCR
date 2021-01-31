@@ -21,6 +21,9 @@
     <string name="action_erosion">Erosione</string>
     <string name="action_opening">Apertura</string>
     <string name="action_closing">Chiusura</string>
+    <string name="label_settings">Imp.Etichetta</string>
+    <string name="label_save">Salva</string>
+    <string name="label_pipeline">Pipeline Immagine</string>
 
 
 </resources>

@@ -71,6 +71,9 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     // Immagine prepocessata da inviare a Tesseract
     // Mat prepocessedImage = null;
 
+    // Bit a 1 dopo che è stato applicato uno smoothing
+    Boolean smoothImage = false;
+
     // Immagine finale con boundingbox
     Mat boundingImage = null;
 
@@ -288,7 +291,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         }
 
         // Filtri di Smoothing
-        else if (id == R.id.action_average || id == R.id.action_gaussian || id == R.id.action_median || id == R.id.action_laplancian){
+        else if (id == R.id.action_average || id == R.id.action_gaussian || id == R.id.action_median
+                || id == R.id.action_laplancian || id == R.id.action_unsharp_mask || id == R.id.action_gradient){
             blurImage(id);
         }
 
@@ -326,6 +330,12 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         // Binarizzo immagine
         // Opzione 1: sfondo bianco con caratteri neri
         // Opzione 2: sfondo nero con caratteri bianchi
+
+        // Trasformo immagine da scala di grigio a binaria
+        // La soglia dattiva puo essere:
+        // - Gaussiana
+        // - Media
+        // - Otzu
 
         else if(id == R.id.action_binary){
 
@@ -435,7 +445,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
         }
 
-        // Apertura
+        // Apertura: per rimouovere rumore
+        // erosione seguita da dilatazione
         else if (id == R.id.action_opening){
             // Verifico che l'immagine sia stata binarizzata
             if(imageBin==false)
@@ -454,7 +465,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
         }
 
-        // Chiusura
+        // Chiusura: chiude piccoli fori
+        // Dilatazione seguita da erosione
         else if (id == R.id.action_closing){
             // Verifico che l'immagine sia stata binarizzata
             if(imageBin==false)
@@ -571,6 +583,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
         // Resetto il flag di binarizzazione
         imageBin = false;
+        smoothImage = false;
 
         originalImage = Imgcodecs.imread(path);
         Mat rgbImage=new Mat();
@@ -800,11 +813,20 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         return false;
     }
 
-    // Pipeline: Rimozione del rumore
-    // Azione corrispondente alla media , gaussiana o mediana
+    // Pipeline: Rimozione del rumore e risalto contorni
+    // Applicazione dei filtri di Smoothing e di Sharpening
+    // Filtri di Smoothing: - media
+    //                      - gaussiana
+    //                      - mediana
+    // Filtri di Sharpening: - 1° ordine: gradiente (derivata prima)
+    //                       - 2° ordine: laplanciano (derivata seconda)
+    //                       - Unsharp Masking
     // L'immagine deve essere in scala di grigio
     private void blurImage(int id)
     {
+        // Un kernel maggiore sfuoca di piu l'immagine
+
+
         // Filtro di media
         if(id==R.id.action_average)
         {
@@ -815,6 +837,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             Imgproc.blur(greyImage, blurredImage, size);
             displayImage(blurredImage);
 
+            smoothImage = true;
             greyImage = blurredImage;
         }
         // Filtro gaussiano
@@ -829,6 +852,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             Imgproc.GaussianBlur(greyImage, blurredImage, size, 0,0);
             displayImage(blurredImage);
 
+            smoothImage = true;
+
             greyImage = blurredImage;
 
         }
@@ -842,10 +867,17 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             // blurredImage.copyTo(greyImage);
             displayImage(blurredImage);
 
+            smoothImage = true;
+
             greyImage = blurredImage;
         }
 
-        // Filtro laplanciano per sharpering,
+        else if(id == R.id.action_gradient){
+
+
+        }
+
+        // Filtro laplanciano per sharpering, 2° ordine
         else if(id==R.id.action_laplancian)
         {
             Mat sharpImage=new Mat();
@@ -867,7 +899,46 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             System.out.println("Applicato filtro sharpening Laplanciano");
         }
 
-    }
+        else if(id== R.id.action_unsharp_mask){
+
+            // Applicare filtro di smoothing per sfocare immagine originale
+            // Come immagine sfocata prendo una gray image gia preelaborata con un opportuno filtro
+            // di smoothing per vedere i diversi risultati
+
+
+            Mat blurredImage=new Mat();
+            Size size=new Size(3,3);
+            // Applico filtro gaussiano 7 x 7
+            // la deviazione standard sulla X e sulla Y sulla base della grandezza del filtro
+            // Indicando 0 le calcola in automatico
+            // Maggiore è la varianza piu il filtro è potente
+            Imgproc.GaussianBlur(greyImage, blurredImage, size, 5,0);
+
+            // Sottrarre immagine sfocata tramite filtro di sharpering dall'originale
+
+            // Calcolo la maschera
+            Mat mask = new Mat();
+            Core.subtract(greyImage, blurredImage, mask);
+
+            // Aggiungere la maschera all'originale con un opportuno peso K
+            // Se k = 1 allora è un Unsharp Mask
+            // Se k > 1 allora è un filtraggio highboost
+
+            Scalar k = new Scalar(6.5);
+            Mat temp = new Mat();
+            Core.multiply(mask, k, temp);
+            Mat sharpedImage = new Mat();
+
+            Core.add(greyImage, temp, sharpedImage);
+
+            greyImage = sharpedImage;
+
+            displayImage(greyImage);
+
+            }
+
+        }
+
 
 // Disegno bounding box parole ottenute da Tesseract
     private void calculateBoundingBoxWorld(ResultIterator iterator){

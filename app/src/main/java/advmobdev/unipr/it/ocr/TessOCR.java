@@ -41,8 +41,8 @@ public class TessOCR {
         // Linguaggio utilizzato per la ricerca: ita
         System.out.println("Linguaggio OCR: " + mTess.getInitLanguagesAsString());
 
-        // Imposto il tipo di segmentazione della pagina
-         // mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+        // Imposto il tipo di segmentazione della pagina, uso quello di defaulr
+         // mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_ONLY);
 
 
     }

@@ -90,10 +90,27 @@
                 android:orderInCategory="23"
                 android:id="@+id/action_median"
                 android:title="@string/action_median"/>
+
             <item
-                android:orderInCategory="23"
+                android:orderInCategory="25"
+                android:id="@+id/action_gradient"
+                android:title="@string/action_gradient"/>
+
+
+            <item
+                android:orderInCategory="26"
                 android:id="@+id/action_laplancian"
                 android:title="@string/action_laplancian"/>
+
+            <item
+                android:orderInCategory="27"
+                android:id="@+id/action_unsharp_mask"
+                android:title="@string/action_unsharp_mask"/>
+
+
+
+
+
 
         </menu>
     </item>

@@ -11,12 +11,12 @@
     <string name="ocr">OCR</string>
     <string name="ocr_run">Analisi OCR</string>
     <string name="action_Trasformation">Trasf.Prospettica</string>
-    <string name="list_blur">Smoothing immagine</string>
-    <string name="list_blur_small">SI</string>
+    <string name="list_blur">Image Enhancement</string>
+    <string name="list_blur_small">IE</string>
     <string name="action_average">Media</string>
     <string name="action_gaussian">Gaussiano</string>
     <string name="action_median">Mediano</string>
-    <string name="action_laplancian">Laplanciano</string>
+    <string name="action_laplancian">2° Laplanciano</string>
     <string name="action_dilation">Dilatazione</string>
     <string name="action_erosion">Erosione</string>
     <string name="action_opening">Apertura</string>
@@ -24,6 +24,8 @@
     <string name="label_settings">Imp.Etichetta</string>
     <string name="label_save">Salva</string>
     <string name="label_pipeline">Pipeline Immagine</string>
+    <string name="action_unsharp_mask">Unsharp Masking</string>
+    <string name="action_gradient">1° Gradiente</string>
 
 
 </resources>

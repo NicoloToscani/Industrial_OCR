@@ -21,8 +21,10 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.googlecode.tesseract.android.ResultIterator;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -102,6 +104,9 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     // Lista dei valori ricercare
     ArrayList<String> labelValues;
 
+    // Barra navigazione cambio pagine
+    BottomNavigationView bottomNavigationView;
+
     // Tesseract
     TessOCR mTessOCR;
     private  String language = "ita";
@@ -135,6 +140,31 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
         iv = (ImageView) findViewById(R.id.OCRImageView);
         iv.setOnTouchListener(this);
+
+        // Aggancio UI
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Listener pressione tasti
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+
+                // Pulsante Home
+                switch (item.getItemId()){
+                    case R.id.page_1:
+                        System.out.println("Pulsante HOME");
+                        return true;
+                    case R.id.page_2:
+                        System.out.println("Pulsante settings");
+                        return true;
+                }
+
+
+
+                return false;
+            }
+        });
+
 
 
         // Listener che si mette in ascolto sul cambio di valore
@@ -536,6 +566,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();

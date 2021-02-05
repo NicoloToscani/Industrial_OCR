@@ -21,6 +21,9 @@
         <activity
             android:name="advmobdev.unipr.it.ocr.LabelActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name="advmobdev.unipr.it.ocr.PrepocessingActivity"
+            android:theme="@style/AppTheme" />
 
     </application>
 

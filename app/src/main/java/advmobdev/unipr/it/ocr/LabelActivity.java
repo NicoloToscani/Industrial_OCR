@@ -38,16 +38,14 @@ public class LabelActivity extends AppCompatActivity {
 
   public static String STRINGA_BUNDLE = "lista_valori_etichetta";
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Associa un activity alla sua View
         setContentView(R.layout.activity_label);
+
+       this.setTitle("Label settings");
 
         saveButton = (Button)findViewById(R.id.buttonSave);
         pipelineButton = (Button)findViewById(R.id.buttonPipeline);

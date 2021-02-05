@@ -22,7 +22,7 @@
     <string name="action_opening">Apertura</string>
     <string name="action_closing">Chiusura</string>
     <string name="label_settings">Imp.Etichetta</string>
-    <string name="home">Home</string>
+    <string name="image">Image settings</string>
     <string name="label_save">Salva</string>
     <string name="label_pipeline">Pipeline Immagine</string>
     <string name="action_unsharp_mask">Unsharp Masking</string>

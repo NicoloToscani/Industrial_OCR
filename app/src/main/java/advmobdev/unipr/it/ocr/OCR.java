@@ -61,6 +61,9 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
 
+    Context context;
+    Intent intent;
+
     // Flag di binarizzazione, resettato ad ogni nuovo caricamento immagine
     Boolean imageBin = false;
 
@@ -100,7 +103,6 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     // Iteratore risultato tesseract
     ResultIterator textIterator = null;
 
-
     // Lista dei valori ricercare
     ArrayList<String> labelValues;
 
@@ -125,18 +127,19 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         }
     };
 
-
     NumberPicker np; // Number picker
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = getApplicationContext();
+
         // Associa un activity alla sua View
         setContentView(R.layout.activity_ocr);
 
         // Carico il number picker nel layout
-        np = (NumberPicker) findViewById(R.id.nBin);
+     //   np = (NumberPicker) findViewById(R.id.nBin);
 
         iv = (ImageView) findViewById(R.id.OCRImageView);
         iv.setOnTouchListener(this);
@@ -152,27 +155,34 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 // Pulsante Home
                 switch (item.getItemId()){
                     case R.id.page_1:
-                        System.out.println("Pulsante HOME");
+                        System.out.println("Avvio Activity impostazione parametri algoritmi");
+                        // Creo intent per il cambio activity
+                         context = getApplicationContext();
+                         intent = new Intent(new Intent(context, PrepocessingActivity.class));
+                        startActivity(intent);
+
                         return true;
                     case R.id.page_2:
-                        System.out.println("Pulsante settings");
+                        System.out.println("Avvio Activity inserimento campi etichetta");
+
+                        // Creo intent per il cambio activity
+                        context = getApplicationContext();
+                        intent = new Intent(new Intent(context, LabelActivity.class));
+                        startActivity(intent);
                         return true;
                 }
-
 
 
                 return false;
             }
         });
 
-
-
         // Listener che si mette in ascolto sul cambio di valore
-        np.setOnValueChangedListener(this);
-        np.setMinValue(1);
-        np.setMaxValue(256);
-        np.setValue(25);     // Valore inizale
-        np.setVisibility(View.INVISIBLE);  // Lo rendo visibile quando viene caricato istogramma
+      //  np.setOnValueChangedListener(this);
+      //  np.setMinValue(1);
+      //  np.setMaxValue(256);
+      //  np.setValue(25);     // Valore inizale
+      //  np.setVisibility(View.INVISIBLE);  // Lo rendo visibile quando viene caricato istogramma
 
 
         // Istanzio oggetto Tesseract
@@ -388,7 +398,12 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             // i valori
 
             // Applico la soglia di Otsu che tiene conto delle differenzae di variazione di luce
-            Imgproc.threshold(greyImage, greyImage, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+            // La rilevazione è migliore con la soglia binaria, e non Otsu-> ????
+             // Imgproc.threshold(greyImage, greyImage, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+
+             Imgproc.threshold(greyImage, greyImage,55, 255, Imgproc.THRESH_BINARY);
+
+          //  Imgproc.adaptiveThreshold(greyImage, greyImage, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 10,10);
 
             // greyImage = binaryImage;
 
@@ -445,7 +460,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 toast.show();
                 return true;
             }
-            Size kernel = new Size(3,3);
+            Size kernel = new Size(2,2);
             Mat erodeElement = getStructuringElement(Imgproc.MORPH_ELLIPSE, kernel);
 
             Imgproc.erode(greyImage,greyImage, erodeElement);
@@ -492,7 +507,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 return true;
             }
 
-            Mat kernel = Mat.ones(5,5, CvType.CV_32F);
+            Mat kernel = Mat.ones(1,1, CvType.CV_32F);
             Imgproc.morphologyEx(greyImage, greyImage, Imgproc.MORPH_OPEN, kernel );
             displayImage(greyImage);
 
@@ -512,7 +527,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 return true;
             }
 
-            Mat kernel = Mat.ones(5,5, CvType.CV_32F);
+            Mat kernel = Mat.ones(1,1, CvType.CV_32F);
             Imgproc.morphologyEx(greyImage, greyImage, Imgproc.MORPH_CLOSE, kernel );
             displayImage(greyImage);
 
@@ -636,7 +651,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
          Imgproc.resize(rgbImage, sampledImage, new Size(),downSampleRatio,downSampleRatio,Imgproc.INTER_AREA);
 
         // Ridimensiono per Tesseract, da valutare se si può migliare
-       // Imgproc.resize(rgbImage, sampledImage, new Size(),1.2,1.2,Imgproc.INTER_CUBIC);
+       //  Imgproc.resize(rgbImage, sampledImage, new Size(),1.2,1.2,Imgproc.INTER_CUBIC);
 
 
         try {
@@ -677,8 +692,6 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         // Collego la ImageView e gli assegno la BitMap
         ImageView iv = (ImageView) findViewById(R.id.OCRImageView);
         iv.setImageBitmap(bitMap);
-
-
 
     }
 
@@ -958,6 +971,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             // Se k = 1 allora è un Unsharp Mask
             // Se k > 1 allora è un filtraggio highboost
 
+            // Scalar k = new Scalar(6.5);
+
             Scalar k = new Scalar(6.5);
             Mat temp = new Mat();
             Core.multiply(mask, k, temp);
@@ -970,9 +985,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             displayImage(greyImage);
 
             }
-
         }
-
 
 // Disegno bounding box parole ottenute da Tesseract
     private void calculateBoundingBoxWorld(ResultIterator iterator){
@@ -1004,7 +1017,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             org.opencv.core.Point rectP1 = new org.opencv.core.Point(x_1, y_1);
             org.opencv.core.Point rectP2 = new org.opencv.core.Point(x_2, y_2);
 
-            Imgproc.rectangle(boundingImage, rectP1, rectP2, new Scalar(255,0,0), 2);
+            Imgproc.rectangle(boundingImage, rectP1, rectP2, new Scalar(0,255,0), 2);
 
             System.out.println("Parola: " + lastUTF8Text + " Confidence: " + lastConfidence);
 

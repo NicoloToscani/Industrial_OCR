@@ -1,12 +1,12 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
-INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-8:12
+ADDED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
+INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:2:1-10:12
 	package
 		ADDED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml:3:7-27
 		INJECTED from /Users/nicolo.toscani/Desktop/OCR/openCVLibrary343/src/main/AndroidManifest.xml

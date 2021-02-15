@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foregroundTint="#F44336"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="175dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:text="Thresholding type"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/radio_thr_simple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioThrButtonClicked"
+            android:text="@string/action_radio_thr_simple" />
+
+        <RadioButton
+            android:id="@+id/radio_thr_adaptive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioThrButtonClicked"
+            android:text="@string/action_radio_thr_adaptive" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="#DDE8EA"
+            android:text="Simple Thresholding"
+            android:textAlignment="center"
+            android:textSize="10pt" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Thresh: "
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editSimpleThr"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:max="255"/>
+
+
+
+        <RadioButton
+            android:id="@+id/radio_thr_binary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioSimpleThrButtonClicked"
+            android:text="@string/action_radio_thr_binary" />
+
+        <RadioButton
+            android:id="@+id/radio_thr_otsu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioSimpleThrButtonClicked"
+            android:text="@string/action_radio_thr_otsu" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="#DDE8EA"
+            android:text="Adaptive Thresholding"
+            android:textAlignment="center"
+            android:textSize="10pt" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <RadioButton
+            android:id="@+id/radio_thr_adaptive_meanc_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioAdaptiveThrButtonClicked"
+            android:text="@string/action_radio_thr_adaptive_mean_c" />
+
+        <RadioButton
+            android:id="@+id/radio_thr_adaptive_gaussian_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioAdaptiveThrButtonClicked"
+            android:text="@string/action_radio_thr_adaptive_gaussian_c" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/action_thr_adaptive_neight_size"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editNeighSize"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:max="255"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/action_thr_adaptive_value"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editAdaptiveValue"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:max="255"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_save" />
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

@@ -22,8 +22,6 @@ public class PrepocessingActivity extends AppCompatActivity {
 
         System.out.println("Creata activity Prepocessing");
 
-
-
     }
 
 

@@ -33,7 +33,7 @@ public class TessOCR {
 
         System.out.println("Patch OCR:" + DATA_PATH + TESS_DATA);
 
-        mTess.init(DATA_PATH,language);
+       // mTess.init(DATA_PATH,language);
 
         // Versione Tessearact: 3.05.00
         System.out.println("Versione Tessearact: " + mTess.getVersion());

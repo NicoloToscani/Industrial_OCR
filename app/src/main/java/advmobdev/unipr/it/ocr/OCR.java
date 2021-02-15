@@ -29,6 +29,7 @@ import com.googlecode.tesseract.android.ResultIterator;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.opencv.imgproc.Imgproc.MORPH_DILATE;
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import static org.opencv.imgproc.Imgproc.threshold;
@@ -60,6 +62,10 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     private static final String TAG = "OCR";
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
+
+    private Pipeline pipeline;
+    public static String STRINGA_BUNDLE = "pipeline_bundle";
+
 
     Context context;
     Intent intent;
@@ -119,6 +125,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                     Log.i(TAG, "OpenCV loaded successfully");
+
                     break;
                 default:
                     super.onManagerConnected(status);
@@ -134,6 +141,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         super.onCreate(savedInstanceState);
 
         context = getApplicationContext();
+
+        pipeline = new Pipeline();
 
         // Associa un activity alla sua View
         setContentView(R.layout.activity_ocr);
@@ -170,6 +179,33 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                         intent = new Intent(new Intent(context, LabelActivity.class));
                         startActivity(intent);
                         return true;
+
+                    case R.id.page_3:
+                        System.out.println("Avvio Activity live camera");
+
+                        // Creo intent per il cambio activity
+                        context = getApplicationContext();
+                        intent = new Intent(new Intent(context, LiveCameraActivity.class));
+                        startActivity(intent);
+                        return true;
+
+                    case R.id.page_4:
+                        System.out.println("Avvio List View");
+
+                        // Apro l'activity principale passando il bundle con i dati inseriti dall'utente
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(STRINGA_BUNDLE, pipeline);
+                        Context context = getApplicationContext();
+
+                        Intent intent = new Intent(new Intent(context, SettingsListActivity.class));
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+
+                        System.out.println("Passato dati per analisi OCR");
+
+                        return true;
+
                 }
 
 
@@ -181,7 +217,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
       //  np.setOnValueChangedListener(this);
       //  np.setMinValue(1);
       //  np.setMaxValue(256);
-      //  np.setValue(25);     // Valore inizale
+      //  np.setValue(25);     // Valore iniza  le
       //  np.setVisibility(View.INVISIBLE);  // Lo rendo visibile quando viene caricato istogramma
 
 
@@ -399,9 +435,11 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
             // Applico la soglia di Otsu che tiene conto delle differenzae di variazione di luce
             // La rilevazione è migliore con la soglia binaria, e non Otsu-> ????
-             // Imgproc.threshold(greyImage, greyImage, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+             //Imgproc.threshold(greyImage, greyImage, 20, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
 
-             Imgproc.threshold(greyImage, greyImage,55, 255, Imgproc.THRESH_BINARY);
+            // Imgproc.threshold(greyImage, greyImage,0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+
+              Imgproc.threshold(greyImage, greyImage,55.5, 255, Imgproc.THRESH_OTSU);
 
           //  Imgproc.adaptiveThreshold(greyImage, greyImage, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 10,10);
 
@@ -460,14 +498,12 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 toast.show();
                 return true;
             }
-            Size kernel = new Size(2,2);
-            Mat erodeElement = getStructuringElement(Imgproc.MORPH_ELLIPSE, kernel);
+            Size kernel = new Size(2.5,2.5);
+            Mat erodeElement = getStructuringElement(Imgproc.MORPH_RECT, kernel);
 
             Imgproc.erode(greyImage,greyImage, erodeElement);
 
             displayImage(greyImage);
-
-
 
         }
 
@@ -484,8 +520,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 return true;
             }
 
-            Size kernel = new Size(2,2);
-            Mat dilateElement = getStructuringElement(Imgproc.MORPH_ELLIPSE, kernel);
+            Size kernel = new Size(2.5,2.5);
+            Mat dilateElement = getStructuringElement(Imgproc.MORPH_RECT, kernel);
             Imgproc.dilate(greyImage,greyImage, dilateElement);
 
             displayImage(greyImage);
@@ -507,7 +543,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 return true;
             }
 
-            Mat kernel = Mat.ones(1,1, CvType.CV_32F);
+            Mat kernel = Mat.ones(5,5, CvType.CV_32F);
             Imgproc.morphologyEx(greyImage, greyImage, Imgproc.MORPH_OPEN, kernel );
             displayImage(greyImage);
 
@@ -527,7 +563,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 return true;
             }
 
-            Mat kernel = Mat.ones(1,1, CvType.CV_32F);
+            Mat kernel = Mat.ones(5,5, CvType.CV_32F);
             Imgproc.morphologyEx(greyImage, greyImage, Imgproc.MORPH_CLOSE, kernel );
             displayImage(greyImage);
 
@@ -585,6 +621,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
+                Log.i(TAG, "uri: " + selectedImageUri);
+
                 selectedImagePath = getPath(selectedImageUri);
                 Log.i(TAG, "selectedImagePath: " + selectedImagePath);
                 loadImage(selectedImagePath);
@@ -598,14 +636,15 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         if(uri == null ) {
             return null;
         }
-// prova a recuperare l'immagine prima dal Media Store
-// questo però funziona solo per immagini selezionate dalla galleria
-        String[] projection = { MediaStore.Images.Media.DATA };
+        // prova a recuperare l'immagine prima dal Media Store
+        // questo però funziona solo per immagini selezionate dalla galleria
+
+        String[] projection = { MediaStore.Images.ImageColumns.DATA};
         Cursor cursor = getContentResolver().query(uri, projection,
                 null, null, null);
         if(cursor != null ){
             int column_index = cursor.getColumnIndexOrThrow(
-                    MediaStore.Images.Media.DATA);
+                    MediaStore.Images.ImageColumns.DATA);
             cursor.moveToFirst();
             return cursor.getString(column_index);
         }
@@ -633,10 +672,12 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         // Resetto il flag di binarizzazione
         imageBin = false;
         smoothImage = false;
+        originalImage = new Mat();
 
         originalImage = Imgcodecs.imread(path);
         Mat rgbImage=new Mat();
         Imgproc.cvtColor(originalImage, rgbImage, Imgproc.COLOR_BGR2RGB);
+
         Display display = getWindowManager().getDefaultDisplay();
         // Qui va selezionato l'import della classe "android graphics Point" !
         Point size = new Point();
@@ -878,7 +919,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         if(id==R.id.action_average)
         {
             Mat blurredImage=new Mat();
-            Size size=new Size(7,7);
+            Size size=new Size(5,5);
             // Calcola automaticamenti i pesi del filtro in base alla dimensione size
             // Qui applico filtro di media 7x 7
             Imgproc.blur(greyImage, blurredImage, size);
@@ -908,7 +949,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         else if(id==R.id.action_median)
         {
             Mat blurredImage=new Mat();
-            int kernelDim=11;
+            int kernelDim=5;
             // dimensione kerne = 11 (dispari), perchè se pari l'elementpo centrale non esiste.
             Imgproc.medianBlur(greyImage,blurredImage , kernelDim);
             // blurredImage.copyTo(greyImage);
@@ -929,7 +970,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         {
             Mat sharpImage=new Mat();
 
-            int kernel_size = 3;
+            int kernel_size = 1;
             int scale = 1;
             int delta = 0;
             int ddepth = CvType.CV_16S;
@@ -954,7 +995,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
 
             Mat blurredImage=new Mat();
-            Size size=new Size(3,3);
+            Size size=new Size(5,5);
             // Applico filtro gaussiano 7 x 7
             // la deviazione standard sulla X e sulla Y sulla base della grandezza del filtro
             // Indicando 0 le calcola in automatico
@@ -973,7 +1014,7 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
             // Scalar k = new Scalar(6.5);
 
-            Scalar k = new Scalar(6.5);
+            Scalar k = new Scalar(25);
             Mat temp = new Mat();
             Core.multiply(mask, k, temp);
             Mat sharpedImage = new Mat();

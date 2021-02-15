@@ -24,9 +24,34 @@
         <activity
             android:name="advmobdev.unipr.it.ocr.PrepocessingActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name="advmobdev.unipr.it.ocr.LiveCameraActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="advmobdev.unipr.it.ocr.SettingsListActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name="advmobdev.unipr.it.ocr.BinarizationActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name="advmobdev.unipr.it.ocr.MorphologicalActivity"
+            android:theme="@style/AppTheme" />
+
 
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front.autofocus" android:required="false"/>
+
 
 </manifest>

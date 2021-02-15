@@ -21,12 +21,30 @@
     <string name="action_erosion">Erosione</string>
     <string name="action_opening">Apertura</string>
     <string name="action_closing">Chiusura</string>
-    <string name="label_settings">Imp.Etichetta</string>
-    <string name="image">Image settings</string>
+    <string name="label_settings">Label Settings</string>
+    <string name="image">Preprocessing</string>
     <string name="label_save">Salva</string>
+    <string name="label_live_camera">Live Camera</string>
+    <string name="label_settings_list">Settings</string>
     <string name="label_pipeline">Pipeline Immagine</string>
     <string name="action_unsharp_mask">Unsharp Masking</string>
     <string name="action_gradient">1° Gradiente</string>
+    <string name="action_radio_color">Color</string>
+    <string name="action_radio_gray">Gray</string>
+    <string name="action_radio_thr_simple">Simple</string>
+    <string name="action_radio_thr_adaptive">Adaptive</string>
+    <string name="action_radio_thr_binary">Binary</string>
+    <string name="action_radio_thr_otsu">Otsu</string>
+    <string name="action_radio_thr_adaptive_mean_c">Mean</string>
+    <string name="action_radio_thr_adaptive_gaussian_c">Gaussian</string>
+    <string name="action_thr_adaptive_neight_size"> Neigh.</string>
+    <string name="action_thr_adaptive_value"> Value</string>
+    <string name="action_live_camera"> Live Camera</string>
+    <string name="action_live_erosion">Erosion</string>
+    <string name="action_live_dilatation">Dilatation</string>
+    <string name="action_live_opening">Opening</string>
+    <string name="action_live_closing">Closing</string>
+
 
 
 </resources>

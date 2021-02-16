@@ -94,7 +94,8 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
     // Bitmap dell'immagine prepocessata da dare a tersseract
     Bitmap bitmapOCR = null;
 
-    int mHistSizeNum = 60;
+    int mHistSizeNum = 25;
+    int mHistGraySizeNum = 256;
 
 
     // Gestione della trasformazione geometrica
@@ -267,7 +268,21 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         Mat histImage = new Mat();
         image.copyTo(histImage);
         calcHist(histImage);  // Calcolo istogramma
+        // calcHistGray(histImage);
         displayImage(histImage);
+        return true;
+    }
+
+
+
+    private boolean displayHistGray(Mat image) {
+
+        Mat histImage = new Mat();
+        image.copyTo(histImage);
+
+        calcHistGray(histImage);  // Calcolo istogramma livello di grigio
+        displayImage(histImage);
+
         return true;
     }
 
@@ -346,9 +361,13 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
         // Visualizza Istogramma
         else if (id == R.id.action_Hist) {
             /* Inizio Variante 1 */
-            np.setVisibility(View.VISIBLE);
+           // np.setVisibility(View.VISIBLE);
             // Visualizzo istogramma immagine a colori
-            displayHist(sampledImage);
+           displayHist(sampledImage);
+
+            // Visualizzo istogramma immagine a livelli di grigio
+            // displayHist(greyImage);
+
 
         }
         // Converti a livello di grigio
@@ -366,6 +385,16 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             // Converto immagine a colori RGB a livelli di grigio
             Imgproc.cvtColor(sampledImage, greyImage, Imgproc.COLOR_RGB2GRAY);
             displayImage(greyImage);
+
+            // Provo  a plottare istogramma livello di grigio, le componenti RGB presentano gli stessi
+            // valori perchè nella conversione da scala di grigio a RGB vengono copiati i valori
+            // dei livelli di grigio nelle 3 componenti
+            Mat eqC = new Mat();
+            Imgproc.cvtColor(greyImage, eqC, Imgproc.COLOR_GRAY2RGB);
+           displayHistGray(eqC); // Metodo per visualizazione istogramma su livello di grigio
+           // displayHist(eqC);
+
+
             return true;
         }
 
@@ -389,14 +418,18 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
             }
             Mat eqGS=new Mat();
 
-            // Equalizza l'istogramma
+            // Equalizza l'istogramma, cerco di migliorare il contrasto dell'immagine
+            // Non è detto che nel caso dell'OCR miglioriamo perchè perdo l'informazione sul nero
+            // delìi caratteri
+            // L'equalizazione dell'immagine di OpenCV lavora su un singolo canale, quindi inscala di
+            // grigio oppure nel caso RGB mi devo estrarre i diversi canali
             Imgproc.equalizeHist(greyImage, eqGS);
-             displayImage(eqGS);
-            // Mat eqC = new Mat();
-             // Imgproc.cvtColor(eqGS, eqC, Imgproc.COLOR_RGB2GRAY);
+            displayImage(eqGS);
+            Mat eqC = new Mat();
+            Imgproc.cvtColor(eqGS, eqC, Imgproc.COLOR_GRAY2RGB);
 
              // Visualizzo istogramma dopo equalizazione del livello di grigio
-          //   displayHist(eqC);
+             displayHist(eqC);
 
              // Assegno l'immagine equalizzata alla Mat grayImage in  modo da poter essere presa
             // in carica dall'algoritmo successivo
@@ -736,13 +769,15 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
 
     }
 
-    // Calcolo istogramma dell'immagine
+    // Calcolo istogramma dell'immagine a colori
     private void calcHist(Mat image)
     {
         MatOfInt mHistSize = new MatOfInt(mHistSizeNum);
         Mat hist = new Mat();
         float []mBuff = new float[mHistSizeNum];
-        MatOfFloat histogramRanges = new MatOfFloat(0f, 256f);
+        // MatOfFloat histogramRanges = new MatOfFloat(0f, 256f);
+        MatOfFloat histogramRanges = new MatOfFloat(0f, 255f);
+
         Scalar mColorsRGB[] = new Scalar[] { new Scalar(200, 0, 0, 255),
                 new Scalar(0, 200, 0, 255), new Scalar(0, 0, 200, 255) };
         org.opencv.core.Point mP1 = new org.opencv.core.Point();
@@ -763,9 +798,113 @@ public class OCR extends AppCompatActivity implements NumberPicker.OnValueChange
                 mP1.x = mP2.x = offset + (c * (mHistSizeNum + 10) + h) * thickness;
                 mP1.y = sizeRgba.height-1;
                 mP2.y = mP1.y - (int)mBuff[h];
-                Imgproc.line(image, mP1, mP2, mColorsRGB[c], thickness);
+                Imgproc.line(image, mP1, mP2, mColorsRGB[c], 1);
             }
         }
+    }
+
+
+    // Calcolo histogramma in scala di grigio, distribuzione dei livelli di grigio all'interno dell'immagine
+    // da 0 a 255
+    // Asse x: intensità dei divresi livelli di grigio rk
+    // Asse y: numero di pixel che rientrano i quella intensità  nk = h(rk)
+    // Mi permette di capire come è distribuita l'immagine.
+    // E' un immagine scura? chiara?
+    private void calcHistGray(Mat image) {
+
+        // Predisposizione per OpenCV
+
+        // Number of bins of the histogram
+        // Intervallo che rappresenta la larghezza di una singola barra dell'istogramma lungo l'asse X
+        // 256 perchè voglio tutti i valori sulla scala di grigio 0- 255
+        // Bins = suddivisisoni intervallo
+
+        // MatOfInt 1x1x1 che contiene il numbero di bin
+        // 1 riga
+        // 1 colonna
+        // 1 canale
+        MatOfInt mHistSize = new MatOfInt(mHistGraySizeNum);
+
+        // Valori dell'istogramma, il metodo inserisce i valori dell'istogrammi calcolati
+        Mat hist = new Mat();
+
+        // Buffer in cui vado a memorizzare i valori dell'istogramma
+        float []mBuff = new float[mHistGraySizeNum];
+
+        // Limiti dell'istogramma, voglio calcolare i valori da 0 a 255
+        // MatOfFloat 1x1x2
+        // 1 riga
+        // 1 colonna
+        // 2 canali, 0 e 255
+        MatOfFloat histogramRanges = new MatOfFloat(0f, 255f);
+
+        // Predisposzione per disegnare l'istogramma sull'immagine
+
+        // Utilizzato perplottare le linee dell'istogramma, memorizzo un insieme di scalari
+        // Colore RED per istogramma rosso
+        // Colore GREEN per istogramma verde
+        // Colore BLUE per istogramma blue
+        // Devo adattarlo al livello di grigio
+        Scalar mColorsRGB[] = new Scalar[] { new Scalar(200, 0, 0, 255),
+                new Scalar(0, 200, 0, 255), new Scalar(0, 0, 200, 255) };
+
+        // Devo disegnare una line dell'immagine che corrsiponde ad un bin dell'istogramma
+        // Se ho 256 bin avrò 256 righe
+        // La linea verrà disegnata tra due punti mP1(x) e mP2(y)
+        // I valori di questi punti li decideremo in base ai bin che vogliamo
+        org.opencv.core.Point mP1 = new org.opencv.core.Point();
+        org.opencv.core.Point mP2 = new org.opencv.core.Point();
+
+        // Spessore delle linee
+        // Se i bin sono pochi lo spessore avrà un certo numero
+        // Se ho pochi bin posso fare le linee piu larghe per riempire lo schermo
+        // Se ho 256 bin devo diminuire lo spessore, dipende anche dalla grandezza dell'immagine
+        // La larghezza dell'immagine viene divisa per 3 perchè ho 3 immagini per quelle a colori
+        int thickness = (int) (image.width() / (mHistGraySizeNum+10));
+
+        // Controllo il massimo valore sullo spessore della linea
+        if(thickness> 3) thickness = 3;
+
+        // Indice dei canali
+        MatOfInt mChannels[] = new MatOfInt[] { new MatOfInt(0), new MatOfInt(1), new MatOfInt(2) };
+
+        // Calcolo le coordinate x e y sull'immagine di mP1 e mP2 per ciascun bin
+        // Offset  da cui partire per iniziare a disegnare l'istogramma
+        Size sizeRgba = image.size();
+
+        // Da dove parto rispetto alla x
+        int offset = (int) (sizeRgba.width - (3*(mHistGraySizeNum*thickness+30)));
+
+        // Imgproc.calcHist(Arrays.asList(image), mChannels[0], new Mat(), hist, mHistSize, histRange );
+        // RGB, per il coore cicla 3 volte su R G e B, qui i 3 canali sono uguali
+            Imgproc.calcHist(Arrays.asList(image), mChannels[0], new
+                    Mat(), hist, mHistSize, histogramRanges);
+
+
+        // Devo normalizzare l'istogramma perchè sulla y potrei ottenere dei valori molto alti di pixel
+        // che non rientrano nello schermo
+        // Normalizzo rispetto al valore massimo
+        // Alpha: valore massimo di normalizzazione, il valore massimo voglio che copra metà dell'immagine
+            Core.normalize(hist, hist, sizeRgba.height/2, 0,
+                    Core.NORM_INF);
+
+            // Recupero i valori dell'istogramma
+            // I valori che vado a prelevare i valori dell'istogramma sui bin calcolati
+            hist.get(0, 0, mBuff);
+
+            // Verifico i valori dell'istogramma calcolato
+            for(int i = 0; i < mHistGraySizeNum; i++){
+                System.out.println("Valore " + i + ":" + (int)mBuff[i]);
+            }
+
+            // Disegno istogramma sull'immagine
+            for(int h=0; h<mHistGraySizeNum; h++) {
+                mP1.x = mP2.x = ((mHistSizeNum) + h) * thickness;
+                mP1.y = sizeRgba.height; // Fondo dell'immagine
+                mP2.y = mP1.y - (int)mBuff[h]; // Valore dell'istogramma
+                Imgproc.line(image, mP1, mP2, mColorsRGB[2], 1);
+            }
+
     }
 
     // Al cambio di valore del picker ricalcolo istogramma

@@ -9,8 +9,10 @@ import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.Switch;
 
 import androidx.annotation.Dimension;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,12 +41,15 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
     private boolean framesColor = false;
 
-    RadioButton radioButtonColor, radioButtonGray, radioHistogram;
+    RadioButton radioButtonColor, radioButtonGray;
+    Switch switchHistogram;
     Button settings;
 
     Bundle bundle;
 
     Pipeline pipeline;
+
+    boolean activeHist;
 
 
     // Immagine a colori in arrivo dalla videocamera
@@ -80,7 +85,29 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         // mOpenCvCameraView.setMaxFrameSize(width,height);
 
 
-        radioHistogram = (RadioButton)findViewById(R.id.radio_histogram);
+        switchHistogram = (Switch) findViewById(R.id.switch2);
+        switchHistogram.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+
+                    System.out.println("Abilito istogramma");
+
+                    activeHist = true;
+                }
+
+                else if(!isChecked){
+
+                    System.out.println("Disabilito istogramma");
+
+                    activeHist = false;
+                }
+
+            }
+        });
+
+
         radioButtonColor = (RadioButton)findViewById(R.id.radio_color);
         radioButtonGray = (RadioButton)findViewById(R.id.radio_gray);
         settings = (Button)findViewById(R.id.buttonSettings);
@@ -89,7 +116,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
         radioButtonColor.setChecked(false);
         radioButtonGray.setChecked(true);
-        radioHistogram.setChecked(false);
+        switchHistogram.setChecked(false);
 
         // Recupero il bundle e lo utilizzo per settare i dati inseriti
         bundle = getIntent().getExtras();
@@ -282,6 +309,13 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
             }
 
+            else if(activeHist == true){
+
+                 displayHistGray(mGray);
+                System.out.println("Abilitato istogramma");
+
+            }
+
             return mGray;
         }
 
@@ -320,6 +354,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
     }
 
 
+    /*
     // Gestione radio buttom per il cambio del colore
     public void onRadioHistogramButtonClicked(View view) {
         // Is the button now checked?
@@ -330,17 +365,16 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             case R.id.radio_histogram:
                 if (!checked) {
 
-                    radioHistogram.setChecked(true);
-                    System.out.println("Attivato visualizzazione istogramma");
-                    // Visualizzo l'istogramma sull'immagine
-                    displayHistGray(mGray);
-
+                    activeHist = false;
+                    radioHistogram.setChecked(false);
                 }
 
                 else if(checked){
-                    radioHistogram.setChecked(false);
+                    radioHistogram.setChecked(true);
                     // Disabilito il bottone di selezione
-                    System.out.println("Disabilitato visualizzazione istogramma");
+                    System.out.println("Attivato visualizzazione istogramma");
+                    // Visualizzo l'istogramma sull'immagine
+                    activeHist = true;
 
                 }
 
@@ -349,7 +383,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
 
     }
-
+    */
     // Visualizzazione e calcolo dell'istogramma in scala di grigio per valutare come applicare
     // la soglia per binarizzazione
 
@@ -359,7 +393,8 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         image.copyTo(histImage);
 
         calcHistGray(histImage);  // Calcolo istogramma livello di grigio
-         displayImage(histImage);
+         //displayImage(histImage);
+        histImage.copyTo(mGray);
 
         return true;
     }
@@ -464,7 +499,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             mP1.x = mP2.x = ((25) + h) * thickness;
             mP1.y = sizeRgba.height; // Fondo dell'immagine
             mP2.y = mP1.y - (int)mBuff[h]; // Valore dell'istogramma
-            Imgproc.line(image, mP1, mP2, mColorsRGB[2], 1);
+            Imgproc.line(image, mP1, mP2, mColorsRGB[0], 1);
         }
 
     }

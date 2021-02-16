@@ -32,18 +32,24 @@
             android:text="@string/action_radio_gray"
             android:onClick="onRadioButtonClicked"/>
 
-        <RadioButton android:id="@+id/radio_histogram"
-            android:layout_width="wrap_content"
+        <Switch
+            android:id="@+id/switch2"
+            android:layout_width="381dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/action_radio_histogram"
-            android:onClick="onRadioHistogramButtonClicked"/>
+            android:textAlignment="viewEnd" />
+
 
         <Button
             android:id="@+id/buttonSettings"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/image" />
+            android:text="@string/image"
+            android:textSize="12sp" />
+
+
 
     </LinearLayout>
 

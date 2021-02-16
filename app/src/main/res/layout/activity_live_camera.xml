@@ -32,6 +32,12 @@
             android:text="@string/action_radio_gray"
             android:onClick="onRadioButtonClicked"/>
 
+        <RadioButton android:id="@+id/radio_histogram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_radio_histogram"
+            android:onClick="onRadioHistogramButtonClicked"/>
+
         <Button
             android:id="@+id/buttonSettings"
             android:layout_width="fill_parent"

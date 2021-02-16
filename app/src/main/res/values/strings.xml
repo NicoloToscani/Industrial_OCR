@@ -31,6 +31,7 @@
     <string name="action_gradient">1° Gradiente</string>
     <string name="action_radio_color">Color</string>
     <string name="action_radio_gray">Gray</string>
+    <string name="action_radio_histogram">Histogram</string>
     <string name="action_radio_thr_simple">Simple</string>
     <string name="action_radio_thr_adaptive">Adaptive</string>
     <string name="action_radio_thr_binary">Binary</string>

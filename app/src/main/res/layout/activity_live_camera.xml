@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.opencv.android.JavaCameraView
+        android:id="@+id/CameraView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="visible"
+        opencv:show_fps="true"
+        opencv:camera_id="back"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <RadioButton android:id="@+id/radio_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_radio_color"
+            android:onClick="onRadioButtonClicked"/>
+
+        <RadioButton android:id="@+id/radio_gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_radio_gray"
+            android:onClick="onRadioButtonClicked"/>
+
+        <Switch
+            android:id="@+id/switch2"
+            android:layout_width="381dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/action_radio_histogram"
+            android:textAlignment="viewEnd" />
+
+
+        <Button
+            android:id="@+id/buttonSettings"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/image"
+            android:textSize="12sp" />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <Switch
+            android:id="@+id/switchOCR"
+            android:layout_width="91dp"
+            android:layout_height="wrap_content"
+
+            android:text="OCR"
+            android:textAlignment="viewEnd" />
+
+        <Switch
+            android:id="@+id/switchOCV"
+            android:layout_width="91dp"
+            android:layout_height="wrap_content"
+
+            android:text="OCV"
+            android:textAlignment="viewEnd" />
+
+        <TextView
+            android:id="@+id/textViewOcv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

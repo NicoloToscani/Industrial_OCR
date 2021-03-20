@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foregroundTint="#F44336"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="#DDE8EA"
+            android:text="Unsharp masking"
+            android:textAlignment="center"
+            android:textSize="10pt" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Switch
+            android:id="@+id/switchUnsharp"
+            android:layout_width="381dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Enable"
+            android:textAlignment="viewEnd" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="K size: "
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editXKsize"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:max="255"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="X"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editYKsize"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:max="255"/>
+
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Sigma X: "
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editSigmaX"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:max="255"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Sigma X: "
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editSigmaY"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:max="255"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Scalar K:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editKscalar"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:max="255"/>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_save" />
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

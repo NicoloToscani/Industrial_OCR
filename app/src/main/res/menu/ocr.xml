@@ -6,114 +6,141 @@
         android:id="@+id/action_openGallery"
         android:orderInCategory="100"
         app:showAsAction="never" />
-
-    <item android:title="@string/action_Trasformation"
-        android:id="@+id/action_geometry"
-        android:orderInCategory="200"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/action_Hist"
-        android:orderInCategory="300"
-        android:title="@string/action_Hist" />
-
-    <item android:id="@+id/action_togs"
-        android:orderInCategory="400"
-        android:title="@string/action_ctgs"/>
-
-    <item android:id="@+id/action_egs"
-        android:orderInCategory="500"
-        android:title="@string/action_eqgsistring"/>
-
-
-    <item android:id="@+id/action_binary"
-        android:orderInCategory="600"
-        android:title="@string/action_binary"/>
-
-    <item android:id="@+id/action_clahe"
-        android:orderInCategory="700"
-        android:title="@string/action_clahe"/>
-
-    <item android:id="@+id/action_dilation"
-    android:orderInCategory="700"
-    android:title="@string/action_dilation"/>
-
-    <item android:id="@+id/action_erosion"
-        android:orderInCategory="700"
-        android:title="@string/action_erosion"/>
-
-    <item android:id="@+id/action_opening"
-        android:orderInCategory="700"
-        android:title="@string/action_opening"/>
-
-    <item android:id="@+id/action_closing"
-        android:orderInCategory="700"
-        android:title="@string/action_closing"/>
-
-    <item android:id="@+id/action_ocr"
-        android:title="@string/ocr"
-        android:enabled="true"
-        android:visible="true"
-        android:orderInCategory="1000"
-        android:titleCondensed="@string/ocr"
-        app:showAsAction="always">
-        <menu>
-            <item android:id="@+id/action_ocr_apply"
-                android:orderInCategory="510"
-                android:title="@string/ocr_run"/>
-            <item android:id="@+id/action_label"
-                android:orderInCategory="510"
-                android:title="@string/label_settings"/>
-
-        </menu>
-
-
-    </item>
+    <item android:id="@+id/action_ocr_apply"
+        android:orderInCategory="510"
+        android:title="@string/ocr_run"/>
 
     <item
         android:id="@+id/img_blur"
         android:enabled="true"
         android:orderInCategory="20"
-        android:title="@string/list_blur"
-        android:titleCondensed="@string/list_blur_small"
+        android:title="@string/list_advanced_settings"
+        android:titleCondensed="@string/list_advanced_settings_small"
         android:visible="true"
         app:showAsAction="ifRoom">
         <menu>
-            <item
-                android:orderInCategory="21"
-                android:id="@+id/action_average"
-                android:title="@string/action_average"/>
-            <item
-                android:orderInCategory="22"
-                android:id="@+id/action_gaussian"
-                android:title="@string/action_gaussian"/>
-            <item
-                android:orderInCategory="23"
-                android:id="@+id/action_median"
-                android:title="@string/action_median"/>
+
+
+            <item android:title="@string/action_Trasformation"
+                android:id="@+id/action_geometry"
+                android:orderInCategory="200"
+                app:showAsAction="never" />
+
+            <item android:id="@+id/action_Hist"
+                android:orderInCategory="300"
+                android:title="@string/action_Hist" />
+
+            <item android:id="@+id/action_togs"
+                android:orderInCategory="400"
+                android:title="@string/action_ctgs"/>
+
+            <item android:id="@+id/action_egs"
+                android:orderInCategory="500"
+                android:title="@string/action_eqgsistring"/>
+
+
+            <item android:id="@+id/action_binary"
+                android:orderInCategory="600"
+                android:title="@string/action_binary"/>
+
+            <item android:id="@+id/action_clahe"
+                android:orderInCategory="700"
+                android:title="@string/action_clahe"/>
+
+
+
 
             <item
-                android:orderInCategory="25"
-                android:id="@+id/action_gradient"
-                android:title="@string/action_gradient"/>
+                android:id="@+id/img_smoothing_filter"
+                android:enabled="true"
+                android:orderInCategory="30"
 
+                android:title="@string/list_smoothing_filter"
+                android:titleCondensed="@string/list_smoothing_filter_small"
+                android:visible="true">
+                <menu>
+                    <item
+                        android:orderInCategory="21"
+                        android:id="@+id/action_average"
+                        android:title="@string/action_average"/>
+
+                    <item
+                        android:orderInCategory="22"
+                        android:id="@+id/action_gaussian"
+                        android:title="@string/action_gaussian"/>
+                    <item
+                        android:orderInCategory="23"
+                        android:id="@+id/action_median"
+                        android:title="@string/action_median"/>
+
+                </menu>
+            </item>
 
             <item
-                android:orderInCategory="26"
-                android:id="@+id/action_laplancian"
-                android:title="@string/action_laplancian"/>
+                android:id="@+id/img_sharpening_filter"
+                android:enabled="true"
+                android:orderInCategory="30"
+
+                android:title="@string/list_sharpening_filter"
+                android:titleCondensed="@string/list_sharpening_filter_small"
+                android:visible="true">
+                <menu>
+
+                    <item
+                        android:orderInCategory="25"
+                        android:id="@+id/action_gradient"
+                        android:title="@string/action_gradient"/>
+
+
+                    <item
+                        android:orderInCategory="26"
+                        android:id="@+id/action_laplancian"
+                        android:title="@string/action_laplancian"/>
+
+                    <item
+                        android:orderInCategory="27"
+                        android:id="@+id/action_unsharp_mask"
+                        android:title="@string/action_unsharp_mask"/>
+
+                </menu>
+            </item>
 
             <item
-                android:orderInCategory="27"
-                android:id="@+id/action_unsharp_mask"
-                android:title="@string/action_unsharp_mask"/>
+                android:id="@+id/img_morphological_transformations"
+                android:enabled="true"
+                android:orderInCategory="30"
+
+                android:title="@string/list_morphology_transmormation"
+                android:titleCondensed="@string/list_morphology_transformation_small"
+                android:visible="true">
+                <menu>
+
+                    <item android:id="@+id/action_dilation"
+                        android:orderInCategory="700"
+                        android:title="@string/action_dilation"/>
+
+                    <item android:id="@+id/action_erosion"
+                        android:orderInCategory="700"
+                        android:title="@string/action_erosion"/>
+
+                    <item android:id="@+id/action_opening"
+                        android:orderInCategory="700"
+                        android:title="@string/action_opening"/>
+
+                    <item android:id="@+id/action_closing"
+                        android:orderInCategory="700"
+                        android:title="@string/action_closing"/>
 
 
 
-
+                </menu>
+            </item>
 
 
         </menu>
     </item>
+
+
 
 
 

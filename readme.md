@@ -10,4 +10,6 @@ It's possibile analyze an image loaded from device gallery or through live frame
 * binarization
 * morphological transformations 
 
+After an OCR recognition it is possible to apply an OCV check to verify the recognized words with the searched values.
+
 ![](image_test.png)

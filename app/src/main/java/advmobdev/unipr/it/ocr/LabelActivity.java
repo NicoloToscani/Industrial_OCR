@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 // Classe che gestisce l'inserimento dei caratteri da cercare tramite OCR
 public class LabelActivity extends AppCompatActivity {
@@ -31,6 +33,10 @@ public class LabelActivity extends AppCompatActivity {
     EditText editText8;
     EditText editText9;
     EditText editText10;
+    EditText editText11;
+
+    Bundle bundle;
+
 
 
     // Lista utenti da
@@ -47,6 +53,13 @@ public class LabelActivity extends AppCompatActivity {
 
        this.setTitle("Label settings");
 
+        labelValues = new ArrayList<String>(10);
+        for(int i = 0; i < labelValues.size(); i++){
+
+            labelValues.get(i);
+
+        }
+
         saveButton = (Button)findViewById(R.id.buttonSave);
         pipelineButton = (Button)findViewById(R.id.buttonPipeline);
 
@@ -60,6 +73,29 @@ public class LabelActivity extends AppCompatActivity {
         editText8 = (EditText)findViewById(R.id.editTextTextField8);
         editText9 = (EditText)findViewById(R.id.editTextTextField9);
         editText10 = (EditText)findViewById(R.id.editTextTextField10);
+
+        // Recupero il bundle e lo utilizzo per settare i dati inseriti
+        bundle = getIntent().getExtras();
+        if (bundle != null) {
+
+            labelValues = (ArrayList<String>) bundle.getSerializable(OCR.STRINGA_BUNDLE);
+            if(labelValues.size() != 0) {
+                editText1.setText(labelValues.get(0));
+                editText2.setText(labelValues.get(1));
+                editText3.setText(labelValues.get(2));
+                editText4.setText(labelValues.get(3));
+                editText5.setText(labelValues.get(4));
+                editText6.setText(labelValues.get(5));
+                editText7.setText(labelValues.get(6));
+                editText8.setText(labelValues.get(7));
+                editText9.setText(labelValues.get(8));
+                editText10.setText(labelValues.get(9));
+            }
+
+
+        }
+
+
 
         pipelineButton.setOnClickListener(new View.OnClickListener() {
             @Override

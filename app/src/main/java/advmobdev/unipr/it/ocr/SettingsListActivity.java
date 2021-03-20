@@ -11,9 +11,10 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SettingsListActivity extends AppCompatActivity {
+public class SettingsListActivity extends AppCompatActivity  {
 
     // Bottoni che rappresentano i menu
     // Come futura estensione far estendere all'Activity una
@@ -48,13 +49,15 @@ public class SettingsListActivity extends AppCompatActivity {
         System.out.println("Creata activity List View");
 
         items.add("Segmentation");
-        items.add("Morphological Transformations");
-        items.add("Riga 3");
-        items.add("Riga 4");
-        items.add("Riga 5");
-        items.add("Riga 6");
-        items.add("Riga 7");
-        items.add("Riga 8");
+        items.add("Morphological transformations");
+        items.add("Histogram equalization");
+        items.add("Sharpening filters");
+        items.add("");
+        items.add("");
+        items.add("");
+        items.add("");
+        items.add("");
+        items.add("");
 
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
@@ -84,6 +87,28 @@ public class SettingsListActivity extends AppCompatActivity {
                     context = getApplicationContext();
 
                     Intent intent = new Intent(new Intent(context, MorphologicalActivity.class));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                }
+
+                // Equalizzazione istogramma
+                if (position == 2) {
+
+                    context = getApplicationContext();
+
+                    Intent intent = new Intent(new Intent(context, HistogramEqualizationActivity.class));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                }
+
+                // Filtri di sharpening
+                if (position == 3) {
+
+                    context = getApplicationContext();
+
+                    Intent intent = new Intent(new Intent(context, SharpeningActivity.class));
                     intent.putExtras(bundle);
                     startActivity(intent);
 

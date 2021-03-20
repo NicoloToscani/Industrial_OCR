@@ -1,34 +1,40 @@
 <resources>
     <string name="app_name">OCR</string>
-    <string name="action_OpenGallery">Apri Galleria</string>
-    <string name="action_Hist">Visualizza Istogramma</string>
-    <string name="enhance_gs">Migliora Liv.Grigio</string>
-    <string name="enhance_gs_small">MLG</string>
-    <string name="action_ctgs">Converti a Liv.Grigio</string>
-    <string name="action_eqgsistring">Equalizza Liv.Grigio</string>
-    <string name="action_binary">Binarizza</string>
-    <string name="action_clahe">Equalizza CLAHE</string>
+    <string name="action_OpenGallery">Open Gallery</string>
+    <string name="action_Hist">Histogram</string>
+    <string name="enhance_gs">Enhance Gray Level</string>
+    <string name="enhance_gs_small">EGL</string>
+    <string name="action_ctgs">Convert to Gray Level</string>
+    <string name="action_eqgsistring">Equalize Gray Level</string>
+    <string name="action_binary">Thresholding</string>
+    <string name="action_clahe">Equalize CLAHE</string>
     <string name="ocr">OCR</string>
-    <string name="ocr_run">Analisi OCR</string>
-    <string name="action_Trasformation">Trasf.Prospettica</string>
-    <string name="list_blur">Image Enhancement</string>
-    <string name="list_blur_small">IE</string>
-    <string name="action_average">Media</string>
-    <string name="action_gaussian">Gaussiano</string>
-    <string name="action_median">Mediano</string>
-    <string name="action_laplancian">2° Laplanciano</string>
-    <string name="action_dilation">Dilatazione</string>
-    <string name="action_erosion">Erosione</string>
-    <string name="action_opening">Apertura</string>
-    <string name="action_closing">Chiusura</string>
+    <string name="ocr_run">OCR Analisys</string>
+    <string name="action_Trasformation">Perspective Transform.</string>
+    <string name="list_smoothing_filter">Smoothing filters</string>
+    <string name="list_smoothing_filter_small">Smoothing filters</string>
+    <string name="list_sharpening_filter">Sharpening filters</string>
+    <string name="list_sharpening_filter_small">Sharpening filters</string>
+    <string name="list_morphology_transmormation">Morphological transf.</string>
+    <string name="list_morphology_transformation_small">Morphological transf.</string>
+    <string name="list_advanced_settings">Settings </string>
+    <string name="list_advanced_settings_small">Settings</string>
+    <string name="action_average">Average</string>
+    <string name="action_gaussian">Gaussian</string>
+    <string name="action_median">Median</string>
+    <string name="action_laplancian">2° Laplancian</string>
+    <string name="action_dilation">Dilatation</string>
+    <string name="action_erosion">Erosion</string>
+    <string name="action_opening">Opening</string>
+    <string name="action_closing">Closing</string>
     <string name="label_settings">Label Settings</string>
     <string name="image">Preprocessing</string>
-    <string name="label_save">Salva</string>
+    <string name="label_save">Save</string>
     <string name="label_live_camera">Live Camera</string>
     <string name="label_settings_list">Settings</string>
-    <string name="label_pipeline">Pipeline Immagine</string>
+    <string name="label_pipeline">Image Pipeline</string>
     <string name="action_unsharp_mask">Unsharp Masking</string>
-    <string name="action_gradient">1° Gradiente</string>
+    <string name="action_gradient">1° Gradient</string>
     <string name="action_radio_color">Color</string>
     <string name="action_radio_gray">Gray</string>
     <string name="action_radio_histogram">Histogram</string>
@@ -45,6 +51,9 @@
     <string name="action_live_dilatation">Dilatation</string>
     <string name="action_live_opening">Opening</string>
     <string name="action_live_closing">Closing</string>
+    <string name="action_radio_eq_simple">Simple</string>
+    <string name="action_radio_eq_adaptive">CLACHE</string>
+
 
 
 

@@ -13,7 +13,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#FFEB3B"
             android:text="Media"
             android:textSize="11pt" />
 
@@ -21,7 +20,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#FFEB3B"
             android:text="Kernel:"
             android:textSize="11pt" />
 
@@ -45,7 +43,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#8BC34A"
             android:text="Gaussiano"
             android:textSize="11pt" />
 
@@ -53,7 +50,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#8BC34A"
             android:text="Kernel:"
             android:textSize="11pt" />
 
@@ -80,7 +76,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#8BC34A"
             android:text="Sigma:"
             android:textSize="11pt" />
 
@@ -96,7 +91,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#8BC34A"
             android:text="Gamma:"
             android:textSize="11pt" />
 
@@ -120,7 +114,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#00BCD4"
             android:text="Mediano"
             android:textSize="11pt" />
 
@@ -128,7 +121,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#00BCD4"
             android:text="Kernel:"
             android:textSize="11pt" />
 
@@ -152,7 +144,6 @@
             android:layout_width="279dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#FF9800"
             android:text="Soglia"
             android:textSize="11pt" />
 

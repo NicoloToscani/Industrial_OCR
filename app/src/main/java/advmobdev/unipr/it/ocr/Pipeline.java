@@ -4,6 +4,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 // Rappresenta la pipiline di pre-elaborazioone passata alla camera live
 public class Pipeline implements Serializable {
@@ -20,12 +21,61 @@ public class Pipeline implements Serializable {
     private boolean erosionRadioButton, dilatationRadioButton, openingRadioButton, closingRadioButton;
     private int erosionXValue, erosionYValue, dilatationXValue, dilatationYValue, openingXValue, openingYValue, closingXValue, closingYValue;
 
+    // Equalizzazione istogramma
+    private boolean simpleEqRadioButton, clacheEqRadioButton, disableEqRadioButton;
+    private int tileSizeXValue, tileSizeYValue;
+    private double limitValue;
+
+
+    // Filtri di sharpening
+    // Unsharp Masking
+    int kSizeXUnmaskFilter, kSizeYUnmaskFilter;
+    double scalarMaskUnmask, sigmaXUnmaskFilter, sigmaYUnmaskFilter;
+    boolean unsharpMaskingEnable;
+
+    // Lista campi etichetta da ricercare
+    ArrayList<String> labelValues;
+
+
 
     // Costruttore
     public Pipeline(){
 
         // Inizializzo componenti per binarizzazione
         System.out.println("Allocato oggetto Pipeline");
+
+        // Setto valori di default avvio applicazione
+        // Binarizzazione
+        setSimpleThresholdValue(127.0);
+        setAdaptiveThreasholdValue(127.0);
+        setAdaptiveNeighborhoodSize(5);
+
+        // Morfologia
+        setErosionXValue(2);
+        setErosionYValue(2);
+        setDilatationXValue(2);
+        setDilatationYValue(2);
+        setOpeningXValue(5);
+        setOpeningYValue(5);
+        setClosingXValue(5);
+        setClosingYValue(5);
+
+        // CLACHE istogram
+        setTileSizeXValue(8);
+        setTileSizeYValue(8);
+        setLimitValue(5.0);
+
+        // Smoothing Unsharp Masking
+        setkSizeXUnmaskFilter(5);
+        setkSizeYUnmaskFilter(5);
+        setSigmaXUnmaskFilter(5.0);
+        setSigmaYUnmaskFilter(0.0);
+        setScalarMaskUnmask(25);
+
+
+
+
+
 
     }
 
@@ -196,5 +246,109 @@ public class Pipeline implements Serializable {
 
     public void setOpeningYValue(int openingYValue) {
         this.openingYValue = openingYValue;
+    }
+
+    public void setClacheEqRadioButton(boolean clacheEqRadioButton) {
+        this.clacheEqRadioButton = clacheEqRadioButton;
+    }
+
+    public boolean isSimpleEqRadioButton() {
+        return simpleEqRadioButton;
+    }
+
+    public boolean isClacheEqRadioButton() {
+        return clacheEqRadioButton;
+    }
+
+    public int getTileSizeXValue() {
+        return tileSizeXValue;
+    }
+
+    public double getLimitValue() {
+        return limitValue;
+    }
+
+    public int getTileSizeYValue() {
+        return tileSizeYValue;
+    }
+
+    public void setLimitValue(double limitValue) {
+        this.limitValue = limitValue;
+    }
+
+    public void setSimpleEqRadioButton(boolean simpleEqRadioButton) {
+        this.simpleEqRadioButton = simpleEqRadioButton;
+    }
+
+    public void setTileSizeXValue(int tileSizeXValue) {
+        this.tileSizeXValue = tileSizeXValue;
+    }
+
+    public void setTileSizeYValue(int tileSizeYValue) {
+        this.tileSizeYValue = tileSizeYValue;
+    }
+
+    public boolean isDisableEqRadioButton() {
+        return disableEqRadioButton;
+    }
+
+    public void setDisableEqRadioButton(boolean disableEqRadioButton) {
+        this.disableEqRadioButton = disableEqRadioButton;
+    }
+
+    public boolean isUnsharpMaskingEnable() {
+        return unsharpMaskingEnable;
+    }
+
+    public double getScalarMaskUnmask() {
+        return scalarMaskUnmask;
+    }
+
+    public double getSigmaYUnmaskFilter() {
+        return sigmaYUnmaskFilter;
+    }
+
+    public double getSigmaXUnmaskFilter() {
+        return sigmaXUnmaskFilter;
+    }
+
+    public int getkSizeXUnmaskFilter() {
+        return kSizeXUnmaskFilter;
+    }
+
+    public int getkSizeYUnmaskFilter() {
+        return kSizeYUnmaskFilter;
+    }
+
+    public void setkSizeXUnmaskFilter(int kSizeXUnmaskFilter) {
+        this.kSizeXUnmaskFilter = kSizeXUnmaskFilter;
+    }
+
+    public void setkSizeYUnmaskFilter(int kSizeYUnmaskFilter) {
+        this.kSizeYUnmaskFilter = kSizeYUnmaskFilter;
+    }
+
+    public void setScalarMaskUnmask(double scalarMaskUnmask) {
+        this.scalarMaskUnmask = scalarMaskUnmask;
+    }
+
+    public void setSigmaYUnmaskFilter(double sigmaUnmaskFilter) {
+        this.sigmaYUnmaskFilter = sigmaUnmaskFilter;
+    }
+
+    public void setSigmaXUnmaskFilter(double sigmaXUnmaskFilter) {
+        this.sigmaXUnmaskFilter = sigmaXUnmaskFilter;
+    }
+
+    public void setUnsharpMaskingEnable(boolean unsharpMaskingEnable) {
+        this.unsharpMaskingEnable = unsharpMaskingEnable;
+    }
+
+    public ArrayList<String> getLabelValues() {
+        return labelValues;
+    }
+
+    public void setLabelValues(ArrayList<String> labelValues) {
+        this.labelValues = labelValues;
     }
 }

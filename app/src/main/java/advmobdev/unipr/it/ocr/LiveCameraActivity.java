@@ -2,20 +2,29 @@ package advmobdev.unipr.it.ocr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.Dimension;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.googlecode.tesseract.android.ResultIterator;
+import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.Utils;
@@ -27,33 +36,68 @@ import org.opencv.core.MatOfInt;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.dnn.Dnn;
+import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Driver;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
 
 public class LiveCameraActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-
+    // Per caricamento da asset
     private CameraBridgeViewBase mOpenCvCameraView;
-
     private boolean framesColor = false;
 
     RadioButton radioButtonColor, radioButtonGray;
-    Switch switchHistogram;
+    Switch switchHistogram, switchOCR, switchOcv;
+    TextView ocvAverage;
+
+
     Button settings;
-
     Bundle bundle;
-
     Pipeline pipeline;
 
     boolean activeHist;
+    boolean activeOcr;
+    boolean activeOcv;
 
+    // Tesseract
+    TessOCR mTessOCR;
+
+    OCV ocv;
+
+    // Iteratore risultato tesseract
+    ResultIterator textIterator = null;
+
+    // Bitmap dell'immagine prepocessata da dare a tersseract
+    Bitmap bitmapOCR = null;
+
+    // Immagine finale con boundingbox
+    Mat boundingImage = null;
 
     // Immagine a colori in arrivo dalla videocamera
     Mat mColor, mGray = null, mGrayT = null, mGrayF = null, mColorT = null, mColorF = null;
+
+    // Lista parola da ricercare
+    ArrayList<String> labelValues;
+    ArrayList<String> labelCopy;
+    ArrayList<String> ocrValues;
+
+    boolean realDevice = false;
+
+    String buildModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +110,14 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
         System.out.println("Creata activity Live Camera");
 
+        mTessOCR = new TessOCR();
+
+        ocv = new OCV();
+
         // Set up camera listener.
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.CameraView);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-
         mOpenCvCameraView.enableView();
 
         // Ottengo dimensione del display
@@ -81,9 +128,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         int height = size.y;
 
         System.out.println("Dimensioni display: x = " + width + " y = " + height);
-
         // mOpenCvCameraView.setMaxFrameSize(width,height);
-
 
         switchHistogram = (Switch) findViewById(R.id.switch2);
         switchHistogram.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -107,6 +152,31 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             }
         });
 
+        switchOCR =  (Switch) findViewById(R.id.switchOCR);
+        switchOCR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+
+                    System.out.println("Abilito OCR");
+
+                     activeOcr = true;
+
+
+                }
+
+                else if(!isChecked){
+
+                    System.out.println("Disabilito OCR");
+
+                    activeOcr = false;
+
+                }
+
+            }
+        });
+
 
         radioButtonColor = (RadioButton)findViewById(R.id.radio_color);
         radioButtonGray = (RadioButton)findViewById(R.id.radio_gray);
@@ -118,6 +188,34 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         radioButtonGray.setChecked(true);
         switchHistogram.setChecked(false);
 
+        ocvAverage = (TextView)findViewById(R.id.textViewOcv);
+
+
+
+        switchOcv = (Switch)findViewById(R.id.switchOCV);
+        switchOcv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+
+                    System.out.println("Abilito OCV");
+
+                    activeOcv = true;
+
+                }
+
+                else if(!isChecked){
+
+                    System.out.println("Disabilito OCV");
+
+                    activeOcv = false;
+
+                }
+
+            }
+        });
+
         // Recupero il bundle e lo utilizzo per settare i dati inseriti
         bundle = getIntent().getExtras();
 
@@ -127,6 +225,11 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             System.out.println(pipeline.getSimpleThresholdValue());
 
         }
+
+        labelValues = pipeline.getLabelValues();
+
+        // Shallow copy pechè la classe OCV modifica labelValues ad ogni iterazione
+        labelCopy = new ArrayList<>(labelValues);
 
 
         // Ritorno ai settaggi e restituisco bundle modificato
@@ -146,7 +249,18 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             }
         });
 
+        // Verifico esecuzione applicazione su emulatore
+        if(buildModelContainsEmulatorHints(Build.MODEL)){
 
+            realDevice = false;
+
+        }
+        // Altrimenti è in esecuzione sul dispositivo reale
+        else if(! buildModelContainsEmulatorHints(Build.MODEL)){
+
+            realDevice = true;
+
+        }
 
     }
 
@@ -157,7 +271,6 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         mGray = new Mat(height, width, CvType.CV_8UC1);
         mGrayT = new Mat(height, width, CvType.CV_8UC1);
         mGrayF = new Mat(height, width, CvType.CV_8UC1);
-
         mColor = new Mat(height, width, CvType.CV_8UC4);
         mColorT = new Mat(height, width, CvType.CV_8UC4);
         mColorF = new Mat(height, width, CvType.CV_8UC4);
@@ -168,6 +281,7 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
     @Override
     public void onCameraViewStopped() {
 
+        // Dealloco quando fermo l'acquisizione
         mGray.release();
         mGrayT.release();
         mGrayF.release();
@@ -182,33 +296,57 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-        /*
-        Ruoto immagine a colori in arrivo dalla camera
-
-        Core.transpose(mColor, mColorT);
-        Imgproc.resize(mColorT, mColorF, mColorF.size(), 0,0, 0);
-        Core.flip(mColorF, mColor, 1 );
-        return mColor;
-         */
-
+        // Ottengo frame dalla camera
         inputFrame.rgba().copyTo(mColor); // Copio i frame nella Mat a colori
         inputFrame.gray().copyTo(mGray);  // Copio i frame nella Mat livello di grigio
-
         Imgproc.cvtColor(mColor,mColor,Imgproc.COLOR_RGBA2RGB); //convert rgba mat to rgb
 
+        // In base a come ricevo dalla telecamera applico rotazione e traslazione corrispettiva
+        // Differrenzio i casi di: Camera Back, Camera Front e emulatore (back e front)
 
-        /*
+        // Caso camera back su dispositivo reale applica una rotazione a sinistra di 90°
+        // Caso camera front su dispositivo reale applica una rotazione a destra di 90°
+        // Caso camera su emulatore effettua solo il mirror (flip immagine)
+
+        // Il resize fa lo scaling, cambia la dimensione dell'immagine
+
+        // Verifico orientamento del dispositivo e se sono su dispositivo reale ruoto frame
         // Ruoto immagine a livello di grigio su dispositivo fisico
-        Core.transpose(mGray, mGrayT);
-        Imgproc.resize(mGrayT, mGrayF, mGrayF.size(), 0,0, 0);
-        Core.flip(mGrayF, mGray, 1 );
+        if(realDevice == true){
 
-        */
+            // Camera back (rotated left 90°)
+            // Ruoto immagine scala di grigio in arrivo dalla camera
+            Core.transpose(mGray, mGrayT);
+            Imgproc.resize(mGrayT, mGrayF, mGrayF.size(), 0,0, 0);
+            Core.flip(mGrayF, mGray, 1 );
 
+            // Ruoto immagine a colori in arrivo dalla camera su dispositivo fisico
+            Core.transpose(mColor, mColorT);
+            Imgproc.resize(mColorT, mColorF, mColorF.size(), 0,0, 0);
+            Core.flip(mColorF, mColor, 1 );
+
+            /*
+            // Camera front (rotated right 90°) real device:
+
+            // Ruoto immagine a scala di grigio in arrivo dalla camera
+            Core.flip(mGray, mGrayF, 1);
+            Core.transpose(mGrayF, mGrayT);
+            Core.flip(mGrayT,mGrayF,1);
+            Imgproc.resize(mGrayF, mGray, mGray.size(), 0,0, 0);
+
+            // Ruoto immagine a colori in arrivo dalla camera
+            Core.flip(mColor, mColorF, 1);
+            Core.transpose(mColorF, mColorT);
+            Core.flip(mColorT,mColorF,1);
+            Imgproc.resize(mColorF, mColor, mColor.size(), 0,0, 0);
+
+            */
+
+        }
 
         /* ------------------- PIPELINE PER MIGLIORAMENTO --------------------
          Ora faccio passare il flusso delle immagini in scala di grigio nella pipeline
-         Pipiline statica ovvero è stata decisa priva dell'elaborazione tramite live camera
+         Pipeline statica ovvero è stata decisa priva dell'elaborazione tramite live camera
          effettuando delle prove in campo tramite una preelaborazione effettuata sulle immagini
          Un notevole migloramento sarebbe quello di poter tenere traccia di tutte le
          pre elaborazioni che vengono fatte sulla foto di test ed applicarle nell'ordine registrato
@@ -229,6 +367,68 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         else if (framesColor == false){
 
 
+            // Se presente applico equalizazzione istogramma
+            // Equalizazione standard
+            if(pipeline.isSimpleEqRadioButton()){
+
+                Imgproc.equalizeHist(mGray,mGray);
+                System.out.println("Applicata equalizazione standard");
+
+            }
+            // Equalizazione CLACHE - Contrast Limited Adaptive Histogram Equalization
+            else if(pipeline.isClacheEqRadioButton()){
+
+                Size size = new Size(pipeline.getTileSizeXValue(), pipeline.getTileSizeYValue());
+                CLAHE clache = Imgproc.createCLAHE(pipeline.getLimitValue(), size);
+
+                clache.apply(mGray, mGray);
+
+                System.out.println("Applicato equalizazione CLACHE");
+
+            }
+
+            // Se attiva applico  filtro di sharpening
+
+            if(pipeline.isUnsharpMaskingEnable()){
+
+
+                // Applicare filtro di smoothing per sfocare immagine originale
+                // Come immagine sfocata prendo una gray image gia preelaborata con un opportuno filtro
+                // di smoothing per vedere i diversi risultati
+
+
+                Mat blurredImage=new Mat();
+                Size size=new Size(pipeline.getkSizeXUnmaskFilter(),pipeline.getkSizeYUnmaskFilter());
+                // Applico filtro gaussiano
+                // la deviazione standard sulla X e sulla Y sulla base della grandezza del filtro
+                // Indicando 0 le calcola in automatico
+                // Maggiore è la varianza piu il filtro è potente
+                Imgproc.GaussianBlur(mGray, blurredImage, size, pipeline.getSigmaXUnmaskFilter(),pipeline.getSigmaYUnmaskFilter());
+
+                // Sottrarre immagine sfocata tramite filtro di sharpering dall'originale
+
+                // Calcolo la maschera
+                Mat mask = new Mat();
+                Core.subtract(mGray, blurredImage, mask);
+
+                // Aggiungere la maschera all'originale con un opportuno peso K
+                // Se k = 1 allora è un Unsharp Mask
+                // Se k > 1 allora è un filtraggio highboost
+
+                // Scalar k = new Scalar(6.5);
+
+                Scalar k = new Scalar(pipeline.getScalarMaskUnmask());
+                Mat temp = new Mat();
+                Core.multiply(mask, k, temp);
+                Mat sharpedImage = new Mat();
+
+                Core.add(mGray, temp, sharpedImage);
+
+                mGray = sharpedImage;
+
+            }
+
+
             // Applico binarizzazione
             // Simple threshold
             if(pipeline.isSimpleThreshold()){
@@ -243,7 +443,8 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
                 }
                 // Otsu
                 else if(pipeline.isOtsuThredshold()){
-                    Imgproc.threshold(mGray, mGray, pipeline.getSimpleThresholdValue(), 255, Imgproc.THRESH_OTSU);
+                   // Imgproc.threshold(mGray, mGray, pipeline.getSimpleThresholdValue(), 255, Imgproc.THRESH_OTSU);
+                    Imgproc.threshold(mGray, mGray, 0, 255, Imgproc.THRESH_OTSU);
                     System.out.println("Applicazione soglia Otsu con soglia: " + pipeline.getSimpleThresholdValue());
                 }
 
@@ -313,6 +514,47 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
 
                  displayHistGray(mGray);
                 System.out.println("Abilitato istogramma");
+
+            }
+
+
+            if(activeOcr == true){
+
+                bitmapOCR = bitMapProcess(mGray);
+
+                // Ottengo OCR
+                doOCR(bitmapOCR);
+
+                // Ottengo iteratore da Tesseract
+                textIterator = mTessOCR.ocrIterator();
+
+                boundingImage = mGray;
+
+                calculateBoundingBoxWorld(textIterator, boundingImage);
+
+            }
+
+
+            if((activeOcv == true) && (activeOcr == true)){
+
+                 if(ocrValues != null) {
+
+                     Double average = ocv.applyOcv(ocrValues, labelCopy);
+
+                     if(!average.isNaN()){
+
+                         String avg = Double.toString(average);
+                         String ocvAvg = avg + " %";
+
+                         setText(ocvAverage, ocvAvg);
+
+                         System.out.print(average);
+                     }
+
+                 }
+
+
+
 
             }
 
@@ -452,6 +694,14 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         org.opencv.core.Point mP1 = new org.opencv.core.Point();
         org.opencv.core.Point mP2 = new org.opencv.core.Point();
 
+        // Punti per riferimento asse X
+        org.opencv.core.Point mPx0 = new org.opencv.core.Point(); // x_min
+        org.opencv.core.Point mPy0 = new org.opencv.core.Point(); // y_min
+        org.opencv.core.Point mPx1 = new org.opencv.core.Point(); // x_max
+        org.opencv.core.Point mPy1 = new org.opencv.core.Point(); // y_max
+        org.opencv.core.Point mPxm = new org.opencv.core.Point(); // x_med
+        org.opencv.core.Point mPym = new org.opencv.core.Point(); // y_med
+
         // Spessore delle linee
         // Se i bin sono pochi lo spessore avrà un certo numero
         // Se ho pochi bin posso fare le linee piu larghe per riempire lo schermo
@@ -502,8 +752,28 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
             Imgproc.line(image, mP1, mP2, mColorsRGB[0], 1);
         }
 
-    }
+        // Disegno le coordinate di riferimento per l'istogramma utili per identificare il punto
+        // di sogliatura
+        // mPx0 = 0
+        // mPx1 = 255
+        // mPxm = 127
 
+        mPx0.x = mPy0.x = 25 * thickness;
+        mPx0.y = sizeRgba.height;
+        mPy0.y = mPx0.y - 20;
+        Imgproc.line(image, mPx0, mPy0, mColorsRGB[0], 3);
+
+        mPx1.x = mPy1.x = (25 + 255) * thickness;
+        mPx1.y = sizeRgba.height;
+        mPy1.y = mPx0.y - 20;
+        Imgproc.line(image, mPx1, mPy1, mColorsRGB[0], 3);
+
+        mPxm.x = mPym.x = (25 + 127) * thickness;
+        mPxm.y = sizeRgba.height;
+        mPym.y = mPxm.y - 20;
+        Imgproc.line(image, mPxm, mPym, mColorsRGB[0], 3);
+
+    }
 
     // Visualizzo immagine nel widget ImageView
     private void displayImage(Mat image)
@@ -517,5 +787,104 @@ public class LiveCameraActivity extends AppCompatActivity implements CameraBridg
         iv.setImageBitmap(bitMap);
 
     }
+
+    // Ritorno bitmap dopo elaborazione per edge detection
+    private Bitmap bitMapProcess(Mat image){
+        Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(image, bitmap);
+        return bitmap;
+    }
+
+
+
+    // Chiama il metodo getOCRResult
+    private void doOCR(final Bitmap bitmap) {
+
+        String srcText = mTessOCR.getOCRResult(bitmap);
+        System.out.println("\n");
+        System.out.println(srcText);
+
+    }
+
+    // Disegno bounding box parole ottenute da Tesseract
+    private void calculateBoundingBoxWorld(ResultIterator iterator, Mat image){
+
+        String lastUTF8Text;
+        float lastConfidence;
+        int[] lastBoundingBox;
+        int count = 0;
+        iterator.begin();
+        System.out.println("--- Parole OCR trovate ----");
+
+        ocrValues = new ArrayList<String>();
+        do {
+
+            // TessBaseAPI.PageIteratorLevel.RIL_WORD - Itero su una parola
+            lastUTF8Text = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
+
+            lastConfidence = iterator.confidence(TessBaseAPI.PageIteratorLevel.RIL_WORD);
+
+            ocrValues.add(lastUTF8Text);
+
+            // Bounding box dell'ultima lettera trovata
+            lastBoundingBox = iterator.getBoundingBox(TessBaseAPI.PageIteratorLevel.RIL_WORD);
+
+            // Coordinate P1: left-top
+            int x_1 = (lastBoundingBox[0]);
+            int y_1= (lastBoundingBox[1]);
+
+            // Coordinate P2: righ-bottom
+            int x_2 = (lastBoundingBox[2]);
+            int y_2= (lastBoundingBox[3]);
+
+            // Punti per rettangolo
+            org.opencv.core.Point rectP1 = new org.opencv.core.Point(x_1, y_1);
+            org.opencv.core.Point rectP2 = new org.opencv.core.Point(x_2, y_2);
+
+            Imgproc.rectangle(image, rectP1, rectP2, new Scalar(0,255,0), 2);
+
+            // Etichetta su bounding box parola rilevata
+            String label = lastUTF8Text + ": " + lastConfidence;
+            int[] baseLine = new int[1];
+            // Size labelSize = Imgproc.getTextSize(label, Core.FONT_HERSHEY_SIMPLEX, 0.5, 1, baseLine);
+
+            // Inserisco stringa riconosciuta e livello di confidenza
+            Imgproc.putText(image, label, new org.opencv.core.Point(x_1, y_1),
+                    Core.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 0));
+
+
+            System.out.println("Parola: " + lastUTF8Text + " Confidence: " + lastConfidence);
+
+            count++;
+        }
+        while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD)); // Ogni parola
+
+    }
+
+
+    // Verifico se l'applicazione è in esecuzione sull'emulatore o sul dispositivo reale
+    // Utilizzo per modificare l'orientamento del frame della camera live
+    public boolean buildModelContainsEmulatorHints(String buildModel) {
+        return buildModel.startsWith("sdk")
+                || "google_sdk".equals(buildModel)
+                || buildModel.contains("Emulator")
+                || buildModel.contains("Android SDK");
+    }
+
+
+    // Aggiorno media su interfaccia grafica
+    private void setText(final TextView text,final String value){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                text.setText(value);
+            }
+        });
+    }
+
+
+
+
+
 
 }

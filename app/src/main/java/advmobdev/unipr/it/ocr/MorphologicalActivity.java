@@ -53,23 +53,12 @@ public class MorphologicalActivity extends AppCompatActivity {
         closingYValue = (TextView) findViewById(R.id.editKernelYClosing);
 
 
-
-
-
-
-
-
-
-
-
         // Recupero il bundle e lo utilizzo per settare i dati inseriti
         bundle = getIntent().getExtras();
 
         if (bundle != null) {
 
             pipeline = (Pipeline) bundle.getSerializable(OCR.STRINGA_BUNDLE);
-
-
 
             // Set default erosion
             erosionRadioButton.setChecked(pipeline.isErosionRadioButton());
@@ -88,9 +77,6 @@ public class MorphologicalActivity extends AppCompatActivity {
 
 
         }
-
-
-
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override

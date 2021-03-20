@@ -1,25 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
     <item
         android:id="@+id/page_1"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_image_aspect_ratio_24"
         android:title="@string/image"/>
+
+     />-->
     <item
         android:id="@+id/page_2"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_text_fields_24"
         android:title="@string/label_settings"/>
 
-    <item
-        android:id="@+id/page_3"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_photo_camera_24"
-        android:title="@string/label_live_camera"/>
 
-    <item
-        android:id="@+id/page_4"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_view_list_24"
-        android:title="@string/label_settings_list"/>
-</menu>
+     <item
+         android:id="@+id/page_3"
+         android:enabled="true"
+         android:icon="@drawable/ic_baseline_photo_camera_24"
+         android:title="@string/label_live_camera"/>
+
+
+
+    <!--
+     <item
+         android:id="@+id/page_4"
+         android:enabled="true"
+         android:icon="@drawable/ic_baseline_photo_camera_24"
+         android:title="@string/label_live_camera"/>
+
+      />-->
+ </menu>

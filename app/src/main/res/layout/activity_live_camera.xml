@@ -53,4 +53,36 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <Switch
+            android:id="@+id/switchOCR"
+            android:layout_width="91dp"
+            android:layout_height="wrap_content"
+
+            android:text="OCR"
+            android:textAlignment="viewEnd" />
+
+        <Switch
+            android:id="@+id/switchOCV"
+            android:layout_width="91dp"
+            android:layout_height="wrap_content"
+
+            android:text="OCV"
+            android:textAlignment="viewEnd" />
+
+        <TextView
+            android:id="@+id/textViewOcv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible"/>
+
+
+    </LinearLayout>
+
 </LinearLayout>

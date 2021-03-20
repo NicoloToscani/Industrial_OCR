@@ -2,4 +2,4 @@
 Test
 
 
-![](image_test.png)
+![](image_test.png =250x250)
